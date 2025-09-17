@@ -1,0 +1,149 @@
+# n8n Project .gitignore
+
+# =============================================================================
+# ENVIRONMENT & SECRETS
+# =============================================================================
+.env
+.env.local
+.env.production
+.env.development
+
+# Backup files
+backups/
+*.tar.gz
+*.backup
+
+# =============================================================================
+# N8N DATA (contains credentials and sensitive data)
+# =============================================================================
+# Docker volume data is external, but if mounted locally:
+n8n_data/
+.n8n/
+
+# Personal credentials and configurations
+credentials/
+personal-workflows/
+
+# =============================================================================
+# DOCKER & CONTAINERS
+# =============================================================================
+# Docker Compose override files
+docker-compose.override.yml
+docker-compose.local.yml
+
+# =============================================================================
+# OPERATING SYSTEMS
+# =============================================================================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# =============================================================================
+# DEVELOPMENT TOOLS
+# =============================================================================
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =============================================================================
+# NODE.JS (if adding Node.js scripts later)
+# =============================================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+.pnp.*
+
+# =============================================================================
+# PYTHON (if adding Python scripts later)
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# =============================================================================
+# TEMPORARY & CACHE FILES
+# =============================================================================
+*.tmp
+*.temp
+.cache/
+.temp/
+
+# =============================================================================
+# WORKFLOW DEVELOPMENT
+# =============================================================================
+# Personal test workflows (keep examples)
+workflows/personal/
+workflows/test/
+workflows/dev/
+
+# Workflow backups (manual exports)
+workflow-exports/
+
+# =============================================================================
+# DOCUMENTATION BUILDS
+# =============================================================================
+docs/_build/
+site/
+
+# =============================================================================
+# SSL CERTIFICATES & KEYS
+# =============================================================================
+*.pem
+*.key
+*.crt
+*.csr
+ssl/
+certs/
+
+# =============================================================================
+# PROJECT SPECIFIC
+# =============================================================================
+# Custom scripts output
+*.out
+*.err
+
+# Local development files
+local/
+custom/
+private/

@@ -1,0 +1,108 @@
+{
+  "name": "Gmail to Slack Notification",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gmail-webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "8c75dfbe-4c36-4e85-8a12-2b5c9f8e3a4d",
+      "name": "Gmail Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "REPLACE_WITH_YOUR_WEBHOOK_ID"
+    },
+    {
+      "parameters": {
+        "channel": "#general",
+        "text": "New email received!",
+        "attachments": [
+          {
+            "color": "#36a64f",
+            "title": "={{$node['Gmail Webhook'].json['subject']}}",
+            "text": "From: {{$node['Gmail Webhook'].json['from']}}\nTo: {{$node['Gmail Webhook'].json['to']}}\n\nPreview: {{$node['Gmail Webhook'].json['body'].substring(0, 200)}}..."
+          }
+        ]
+      },
+      "id": "7b64efcd-3c25-4d74-9a01-1c4e8f9b2e5a",
+      "name": "Send Slack Message",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ],
+      "credentials": {
+        "slackApi": {
+          "id": "REPLACE_WITH_YOUR_SLACK_CREDENTIAL_ID",
+          "name": "Slack Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "Email notification sent to Slack successfully"
+      },
+      "id": "9d76afdc-4d36-4e85-8a12-3c6d0f9e4b5e",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        680,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Gmail Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send Slack Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Slack Message": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "WORKFLOW_VERSION_ID",
+  "id": "WORKFLOW_ID",
+  "meta": {
+    "instanceId": "REPLACE_WITH_YOUR_INSTANCE_ID"
+  },
+  "tags": [
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z",
+      "id": "TAG_ID",
+      "name": "gmail"
+    },
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z",
+      "id": "TAG_ID_2",
+      "name": "slack"
+    }
+  ]
+}

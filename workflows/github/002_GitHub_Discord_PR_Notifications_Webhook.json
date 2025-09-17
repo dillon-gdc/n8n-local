@@ -1,0 +1,122 @@
+{
+  "name": "GitHub PR to Discord Notifications",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "github-pr-webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-github-pr",
+      "name": "GitHub PR Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [200, 300],
+      "webhookId": "REPLACE_WITH_YOUR_WEBHOOK_ID"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.action}}",
+              "operation": "equal",
+              "value2": "opened"
+            }
+          ]
+        }
+      },
+      "id": "filter-pr-opened",
+      "name": "Filter: PR Opened",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "content": "🚀 **New Pull Request Opened!**\n\n**Repository:** {{$node['GitHub PR Webhook'].json['repository']['full_name']}}\n**Title:** {{$node['GitHub PR Webhook'].json['pull_request']['title']}}\n**Author:** {{$node['GitHub PR Webhook'].json['pull_request']['user']['login']}}\n**URL:** {{$node['GitHub PR Webhook'].json['pull_request']['html_url']}}\n\n**Description:**\n```\n{{$node['GitHub PR Webhook'].json['pull_request']['body'] || 'No description provided'}}\n```",
+        "webhook": "REPLACE_WITH_YOUR_DISCORD_WEBHOOK_URL"
+      },
+      "id": "send-discord-message",
+      "name": "Send Discord Message",
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 1,
+      "position": [600, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "PR notification sent to Discord"
+      },
+      "id": "webhook-response",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [800, 300]
+    }
+  ],
+  "connections": {
+    "GitHub PR Webhook": {
+      "main": [
+        [
+          {
+            "node": "Filter: PR Opened",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter: PR Opened": {
+      "main": [
+        [
+          {
+            "node": "Send Discord Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Discord Message": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "WORKFLOW_VERSION_ID",
+  "id": "WORKFLOW_ID",
+  "meta": {
+    "instanceId": "REPLACE_WITH_YOUR_INSTANCE_ID"
+  },
+  "tags": [
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z",
+      "id": "TAG_ID",
+      "name": "github"
+    },
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z",
+      "id": "TAG_ID_2",
+      "name": "discord"
+    }
+  ]
+}
