@@ -143,6 +143,10 @@ certs/
 *.out
 *.err
 
+# Auto-generated tunnel URLs and references
+tunnel-urls.txt
+tunnel-*.txt
+
 # Local development files
 local/
 custom/

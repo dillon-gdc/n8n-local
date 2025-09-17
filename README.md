@@ -2,468 +2,351 @@
 
 **The easiest way to run n8n locally with full integration support.**
 
-Perfect for business users, analysts, and anyone who wants to automate workflows with **Slack, Gmail, GitHub, Jenkins, Outlook** and hundreds of other services - all running securely on your own computer.
+Perfect for **business users** who want to automate workflows with Slack, Gmail, GitHub, Jenkins, and 400+ services - or **developers** who need a local n8n development environment.
 
-## ✨ What This Gives You
+---
 
-- **🌐 Full Integration Access**: Connect to Slack, Gmail, Outlook, GitHub, Jenkins, and 400+ services
-- **🔒 100% Local & Private**: Everything runs on your computer - your data never leaves
-- **📚 Ready-to-Use Templates**: Pre-built workflows you can import and customize
+## 👥 Choose Your Path
+
+<details>
+<summary><h3>🎯 <strong>Business Users</strong> - I want to automate my workflows</h3></summary>
+
+### ✨ What You Get
+- **🌐 Full Integration Access**: Connect to Slack, Gmail, GitHub, and 400+ services
+- **🔒 100% Local & Private**: Everything runs on your computer
+- **📚 Ready-to-Use Templates**: Pre-built workflows you can customize
 - **⚡ Zero Configuration**: One command setup that works on any computer
 - **🚀 Always Online**: Built-in tunnel so external services can reach your workflows
 
-## 🚨 What You Need on Your Computer
-
-**Before starting, make sure you have:**
-
-### Required Software:
+### 🚨 What You Need
 - **Docker Desktop** (free) - [Download here](https://www.docker.com/products/docker-desktop/)
-  - For **Mac**: Docker Desktop for Mac
-  - For **Windows**: Docker Desktop for Windows  
-  - For **Linux**: Docker Desktop or Docker Engine
-
-### System Requirements:
 - **4GB RAM** minimum (8GB recommended)
 - **2GB free disk space**
-- **Internet connection** (for downloading and tunnels)
 - **Any modern computer** (Mac, Windows, Linux)
 
-## 🚀 Getting Started (3 Steps)
+### 🚀 Quick Start (3 Steps)
 
-### Step 1: Install Docker Desktop
+#### Step 1: Install Docker Desktop
 1. Download **Docker Desktop** from [docker.com](https://www.docker.com/products/docker-desktop/)
 2. Install and start Docker Desktop
 3. Wait for the whale icon 🐳 to appear in your system tray/menu bar
 
-### Step 2: Download This Project
-1. Download or copy this entire `n8n` folder to your computer
+#### Step 2: Download This Project
+1. Download this `n8n` folder to your computer
 2. Open Terminal (Mac/Linux) or Command Prompt (Windows)
 3. Navigate to the folder: `cd path/to/n8n`
 
-### Step 3: Run Setup & Start
+#### Step 3: Run Setup & Start
 ```bash
-# This will set up everything automatically
+# This sets up everything automatically
 ./setup.sh
 
 # Start n8n with tunnel support for integrations
 ./start.sh
 ```
 
-**🎉 That's it!** 
+**🎉 That's it!** Open http://localhost:5678 and start automating!
 
-- **Local access**: http://localhost:5678
-- **Integration access**: You'll get a public tunnel URL for Slack, Gmail, etc.
+### 📚 Using Workflow Templates
+1. **Browse templates**: Check the `workflows/` folder for automation ideas
+2. **Import workflow**: In n8n, click menu (☰) → Import from file
+3. **Get webhook URLs**: Run `./webhook-helper.sh` for integration URLs
+4. **Set up OAuth**: Run `./oauth-fix.sh` for external service connections
+5. **Start automating**: Your workflows are ready to use!
 
-### ⚡ Super Quick Start (One Command)
-If Docker Desktop is already running:
+### 🔧 Daily Commands
 ```bash
-./setup.sh && ./start.sh
-```
-
-### Manual Setup
-
-If you prefer manual setup or want to understand each step:
-
-```bash
-# Create a persistent volume for your n8n data
-docker volume create n8n_data
-
-# Start n8n container
-docker run -it --rm \
-  --name n8n \
-  -p 5678:5678 \
-  -e GENERIC_TIMEZONE="America/New_York" \
-  -e TZ="America/New_York" \
-  -e N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true \
-  -e N8N_RUNNERS_ENABLED=true \
-  -v n8n_data:/home/node/.n8n \
-  docker.n8n.io/n8nio/n8n
-```
-
-**Note:** Replace `"America/New_York"` with your actual timezone. For Pacific Time, use `"America/Los_Angeles"`, for Mountain Time use `"America/Denver"`, etc.
-
-### Option 2: Docker Compose (Recommended for ongoing development)
-
-Use the included `docker-compose.yml` file:
-
-```bash
-# Start n8n in the background
-docker compose up -d
-
-# View logs
-docker compose logs -f
-
-# Stop n8n
-docker compose down
-```
-
-## 🌐 Accessing n8n
-
-Once running, open your browser and navigate to:
-**http://localhost:5678**
-
-You'll be greeted with the n8n setup wizard where you can create your first admin account.
-
-## 📁 Project Structure
-
-```
-n8n/
-├── README.md              # Main documentation
-├── LICENSE                # MIT License
-├── .gitignore            # Git ignore rules
-├── docker-compose.yml    # Docker Compose configuration
-├── env.example          # Environment configuration template
-├── setup.sh             # Cross-platform setup script
-├── start.sh             # Quick start script  
-├── stop.sh              # Graceful stop script
-├── backup.sh            # Backup creation script
-├── restore.sh           # Backup restore script
-├── oauth-fix.sh         # OAuth troubleshooting tool
-├── workflows/           # 📚 Workflow Library
-│   ├── README.md        # Workflow documentation
-│   ├── gmail/           # Email automation workflows
-│   ├── slack/           # Team communication workflows
-│   ├── discord/         # Discord server automation
-│   ├── github/          # Repository automation
-│   ├── automation/      # General automation workflows
-│   ├── webhooks/        # HTTP integration workflows
-│   ├── data-processing/ # Data transformation workflows
-│   ├── scheduling/      # Time-based workflows
-│   ├── monitoring/      # System monitoring workflows
-│   ├── social-media/    # Social platform automation
-│   ├── ecommerce/       # E-commerce workflows
-│   └── development/     # Developer tool workflows
-└── backups/            # Automated backups (created automatically)
-```
-
-## ⚙️ Configuration Details
-
-### Environment Variables Used:
-- `GENERIC_TIMEZONE`: Sets timezone for schedule-oriented nodes
-- `TZ`: Sets system timezone for the container
-- `N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS`: Ensures secure file permissions
-- `N8N_RUNNERS_ENABLED`: Enables task runners (recommended)
-
-### Ports:
-- **5678**: n8n web interface (mapped to localhost:5678)
-
-### Volumes:
-- `n8n_data`: Persistent storage for workflows, credentials, and settings
-
-## 📚 Working with Workflows
-
-### 📂 Workflow Templates (Ready to Use)
-The `workflows/` folder contains **ready-to-use workflow templates** organized by category:
-- `gmail/` - Email automation 
-- `slack/` - Team notifications
-- `github/` - Code repository automation
-- `jenkins/` - CI/CD pipeline automation
-- And 8 more categories...
-
-### 📥 Importing Templates
-1. **Open n8n**: http://localhost:5678
-2. **Import workflow**: Click menu (☰) → **Import from file**
-3. **Browse templates**: Select any `.json` file from `workflows/`
-4. **Configure credentials**: Add your API keys and tokens
-5. **Test & activate**: Your workflow is ready!
-
-### 📤 Saving Your Own Workflows  
-**Important**: The `workflows/` folder is for **finished, tested workflows only**.
-
-When you create a new workflow:
-1. **Build and test** in n8n
-2. **When finished**: Export via menu (☰) → **Export workflow**
-3. **Save to appropriate category** in `workflows/` folder
-4. **Share with others** by copying the folder
-
-### 🔐 Integration Setup (Slack, Gmail, etc.)
-All external integrations require your **tunnel URL** (not localhost):
-1. **Start n8n**: `./start.sh` 
-2. **Get tunnel URL**: Look for "Tunnel URL:" in the startup output
-3. **Use tunnel URL** when configuring webhooks in Slack, GitHub, etc.
-4. **Run troubleshooter**: `./oauth-fix.sh` if you have issues
-
-## 🔧 Management Commands
-
-### Quick Commands
-```bash
-# Start n8n with auto-setup
+# Start n8n
 ./start.sh
 
-# Stop n8n gracefully  
-./stop.sh
+# Get webhook URLs for integrations  
+./webhook-helper.sh
 
-# Stop with backup
-./stop.sh --backup
-
-# Get OAuth tunnel URL
+# Set up OAuth for Gmail, Slack, GitHub
 ./oauth-fix.sh
+
+# Stop n8n
+./stop.sh
 
 # Create backup
 ./backup.sh
 ```
 
-### Docker Commands
-```bash
-# View logs
-docker compose logs -f
+### 🆘 Need Help?
+- **Documentation**: https://docs.n8n.io/
+- **Community Forum**: https://community.n8n.io/
+- **This project's tutorials**: See `workflows/` folder
 
-# Update to latest version
+</details>
+
+<details>
+<summary><h3>💻 <strong>Developers</strong> - I want to develop with n8n</h3></summary>
+
+### 🛠️ Development Features
+- **🔄 Auto-tunnel URL management**: Environment variables automatically updated
+- **🐳 Docker Compose setup**: Easy container management and customization
+- **📦 Volume persistence**: Your data survives container restarts
+- **🔧 Development optimized**: Fast iteration and debugging
+- **📊 Health monitoring**: Built-in tunnel and container monitoring
+- **🔗 API-ready**: Full REST API access for automation
+
+### ⚡ Quick Setup
+```bash
+git clone <your-repo>
+cd n8n-local
+./setup.sh && ./start.sh
+```
+
+### 🏗️ Architecture
+```
+n8n-local/
+├── docker-compose.yml    # Container configuration
+├── env.example          # Environment template  
+├── .env                 # Auto-generated config (git-ignored)
+├── start.sh             # Auto-tunnel detection & .env updates
+├── env-helper.sh        # Safe .env modification utilities
+├── webhook-helper.sh    # Interactive webhook URL generator
+├── tunnel-monitor.sh    # Health monitoring & change detection
+├── workflows/           # Template library & export destination
+├── shared-files/        # Mount point for workflow file access
+└── backups/            # Automated backup storage
+```
+
+### 🔧 Development Workflow
+
+#### Environment Management
+```bash
+# Auto-tunnel detection & environment update
+./start.sh
+
+# Monitor tunnel changes
+./tunnel-monitor.sh --monitor
+
+# Safe environment variable updates
+./env-helper.sh "https://new-tunnel-url.com/"
+
+# Validate environment file
+source env-helper.sh && validate_env_file
+```
+
+#### Webhook Development
+```bash
+# Interactive webhook URL generator
+./webhook-helper.sh
+
+# Get tunnel URL programmatically
+source .env && echo $N8N_TUNNEL_URL
+
+# Test webhook connectivity
+curl -X POST "${N8N_TUNNEL_URL}webhook/test" -d '{"test":true}'
+```
+
+#### Container Management
+```bash
+# Development mode (with logs)
+docker compose up
+
+# Production mode (detached)
+docker compose up -d
+
+# Update to latest n8n
 docker compose pull && docker compose up -d
 
-# Reset everything (⚠️ deletes data)
+# Reset everything
 docker compose down -v
 ```
 
-### Docker Volume Management
+### 🌐 Environment Variables
 
+Your tunnel URL is automatically managed:
 ```bash
-# List Docker volumes
-docker volume ls
+# Available in workflows
+$env.N8N_TUNNEL_URL
 
-# Inspect n8n data volume
-docker volume inspect n8n_data
-
-# Backup your workflows (optional)
-docker run --rm -v n8n_data:/data -v $(pwd):/backup alpine tar czf /backup/n8n_backup.tar.gz -C /data .
+# Available in shell
+source .env
+echo $N8N_TUNNEL_URL
 ```
 
-## 🚀 Getting Started with Workflows
+### 🔌 API Access
+```bash
+# Health check
+curl ${N8N_TUNNEL_URL}healthz
 
-1. **Access n8n**: Open http://localhost:5678
-2. **Create Account**: Set up your admin credentials
-3. **Explore Templates**: Browse the template library for inspiration
-4. **Build Your First Workflow**: Start with a simple webhook or schedule trigger
+# REST API
+curl ${N8N_TUNNEL_URL}rest/workflows
 
-### Recommended First Workflows:
-- **Hello World**: Manual trigger → Set node → HTTP Request
-- **Scheduled Task**: Schedule trigger → HTTP Request → Send Email
-- **Webhook Handler**: Webhook trigger → Data processing → Response
+# Webhook endpoints
+curl ${N8N_TUNNEL_URL}webhook/your-endpoint
+```
+
+### 📦 Custom Configuration
+
+#### PostgreSQL Database
+Uncomment the PostgreSQL section in `docker-compose.yml` for production-like setup.
+
+#### Custom Environment
+```bash
+cp env.example .env
+# Edit .env with your configurations
+docker compose up -d
+```
+
+#### SSL/Custom Domain
+Mount your certificates in `docker-compose.yml` and update environment variables.
+
+### 🧪 Testing & Debugging
+```bash
+# Container logs
+docker compose logs -f
+
+# Tunnel health check
+./tunnel-monitor.sh
+
+# Environment validation  
+source env-helper.sh && validate_env_file
+
+# Backup before testing
+./backup.sh
+```
+
+### 🔄 Contributing
+1. **Export workflows**: Use n8n's export feature
+2. **Clean sensitive data**: Remove credentials and personal info
+3. **Add to templates**: Place in appropriate `workflows/` subfolder
+4. **Test import**: Verify workflow imports cleanly
+
+</details>
+
+---
+
+## 🎯 Quick Commands Reference
+
+| Task | Command | Description |
+|------|---------|-------------|
+| **Start n8n** | `./start.sh` | Auto-setup, tunnel detection, env updates |
+| **Get webhook URLs** | `./webhook-helper.sh` | Interactive URL generator |
+| **OAuth setup** | `./oauth-fix.sh` | Step-by-step external service setup |
+| **Monitor health** | `./tunnel-monitor.sh` | Check tunnel status and changes |
+| **Stop n8n** | `./stop.sh` | Graceful shutdown |
+| **Backup data** | `./backup.sh` | Create timestamped backup |
+| **View logs** | `docker compose logs -f` | Real-time container logs |
+
+---
+
+## 📚 Workflow Templates
+
+Ready-to-use automation templates in the `workflows/` folder:
+
+- **📧 Email** - Gmail to Slack notifications, auto-responders
+- **💬 Chat** - Slack/Discord integrations, team alerts  
+- **🐙 Development** - GitHub PR notifications, CI/CD triggers
+- **📊 Data** - CSV processing, report generation
+- **🔗 Webhooks** - HTTP integrations, API automation
+- **⏰ Scheduling** - Time-based tasks, recurring operations
+- **📈 Monitoring** - Health checks, uptime monitoring
+- **🛒 E-commerce** - Order processing, inventory alerts
+
+Each template includes setup instructions and example configurations.
+
+---
+
+## 🌐 Integration Setup
+
+### OAuth Services (GitHub, Google, Slack)
+1. Run `./oauth-fix.sh` for step-by-step setup
+2. Use the provided tunnel URLs (not localhost)
+3. Access n8n via tunnel URL when configuring credentials
+
+### Webhook Services (Discord, custom APIs)
+1. Run `./webhook-helper.sh` for webhook URLs
+2. Copy the generated URLs to your external services
+3. Test with the provided curl commands
+
+---
 
 ## 🔧 Troubleshooting
 
 ### Common Issues:
 
-**Port 5678 already in use:**
+**❌ Docker not found**
+- Install Docker Desktop from [docker.com](https://www.docker.com/products/docker-desktop/)
+- Restart terminal after installation
+
+**❌ Port 5678 in use**
 ```bash
 # Check what's using the port
 lsof -i :5678
 
-# Or change the port in docker-compose.yml
-ports:
-  - "5679:5678"  # Use port 5679 instead
+# Or change port in docker-compose.yml
+ports: ["5679:5678"]
 ```
 
-**Permission issues:**
+**❌ Tunnel not working**
 ```bash
-# Fix Docker volume permissions
-docker run --rm -v n8n_data:/data alpine chown -R 1000:1000 /data
+# Restart to get fresh tunnel
+./stop.sh && ./start.sh
+
+# Check tunnel status
+./tunnel-monitor.sh
+
+# Get current URLs
+./webhook-helper.sh
 ```
 
-**Container won't start:**
-```bash
-# Check Docker logs
-docker compose logs n8n
+**❌ OAuth 408 errors**
+- Use tunnel URL (not localhost) for OAuth setup
+- Restart n8n to get fresh tunnel URL
+- Run `./oauth-fix.sh` for detailed guidance
 
-# Restart Docker Desktop if needed
+---
+
+## 🛡️ Security & Privacy
+
+### ✅ What's Safe:
+- **Local data only** - Everything stays on your computer
+- **Encrypted tunnel** - HTTPS encryption for external connections
+- **Temporary URLs** - Tunnel URLs change when you restart
+- **Docker isolation** - n8n runs in isolated container
+
+### ⚠️ Security Notes:
+- **Tunnel URLs are temporary** - Change on each restart
+- **Never share tunnel URLs publicly** 
+- **Development only** - Not for production workloads
+- **Use minimal OAuth permissions** - Only grant necessary access
+
+---
+
+## 📱 Project Structure
+
+```
+n8n-local/
+├── 🚀 start.sh              # Start n8n with auto-tunnel detection
+├── 🛑 stop.sh               # Stop n8n gracefully
+├── ⚙️  setup.sh              # Initial setup and configuration
+├── 🔗 webhook-helper.sh     # Interactive webhook URL generator
+├── 📡 tunnel-monitor.sh     # Health monitoring and change detection
+├── 🔧 oauth-fix.sh          # OAuth troubleshooting and setup
+├── 💾 backup.sh             # Create timestamped backups
+├── 📋 restore.sh            # Restore from backups
+├── 🐳 docker-compose.yml    # Container configuration
+├── 📄 env.example           # Environment template
+├── 📚 workflows/            # Ready-to-use workflow templates
+├── 📁 shared-files/         # File sharing with workflows
+└── 💾 backups/             # Automated backup storage
 ```
 
-## 🔄 Updating n8n
-
-To update to the latest version:
-
-```bash
-# Pull the latest image
-docker compose pull
-
-# Restart with new image
-docker compose down
-docker compose up -d
-```
-
-## 🆘 Troubleshooting
-
-### "Docker not found" or "Command not found"
-**Problem**: Docker Desktop isn't installed or isn't in your PATH
-**Solution**: 
-1. Install Docker Desktop from [docker.com](https://www.docker.com/products/docker-desktop/)
-2. Restart your terminal/command prompt after installation
-3. Make sure Docker Desktop is running (whale icon 🐳 in system tray)
-
-### "Docker daemon is not running"  
-**Problem**: Docker Desktop is installed but not started
-**Solution**:
-1. **Mac**: Look for Docker in Applications, double-click to start
-2. **Windows**: Look for Docker Desktop in Start Menu, click to start
-3. Wait for the whale icon 🐳 to appear in your system tray/menu bar
-
-### "Permission denied" when running scripts
-**Problem**: Scripts don't have execute permissions
-**Solution**:
-```bash
-chmod +x *.sh
-```
-
-### "Can't connect to Slack/Gmail/GitHub"
-**Problem**: Using localhost URL instead of tunnel URL
-**Solution**:
-1. Run `./oauth-fix.sh` to get your tunnel URL
-2. Use the tunnel URL (not localhost) in external service configurations
-3. Make sure n8n is started with `./start.sh` (includes tunnel)
-
-### n8n won't start or shows errors
-**Problem**: Port conflict or Docker issues
-**Solution**:
-1. Stop any existing n8n: `./stop.sh`
-2. Check if port 5678 is in use: `lsof -i :5678` (Mac/Linux)
-3. Restart Docker Desktop
-4. Try starting again: `./start.sh`
-
-### Low performance or crashes
-**Problem**: Insufficient system resources
-**Solution**:
-1. Close other applications to free up RAM
-2. Make sure you have at least 4GB RAM available
-3. Check Docker Desktop resource settings (increase if needed)
-
-### Need help?
-- **n8n Documentation**: https://docs.n8n.io/
-- **Community Forum**: https://community.n8n.io/
-- **Discord**: https://discord.gg/XPKeKXeB
-
-## 🤝 Sharing & Collaboration
-
-This project is designed to be easily shared with friends and team members:
-
-### For Your Friends
-1. **Share the entire directory**: Copy the whole `n8n/` folder
-2. **They run setup**: `./setup.sh` (auto-detects their OS and timezone)
-3. **Start immediately**: `./start.sh`
-4. **Import workflows**: Browse `workflows/` and import via n8n UI
-
-### For GitHub
-The project is ready for GitHub with:
-- ✅ Proper `.gitignore` (excludes sensitive data)
-- ✅ MIT License included
-- ✅ Cross-platform compatibility
-- ✅ Comprehensive documentation
-
-### Security for Sharing
-- ✅ All credentials removed from example workflows
-- ✅ Environment variables for configuration
-- ✅ Backup system for data safety
-- ✅ Clear setup instructions
-
-## 📚 Next Steps
-
-1. **Explore Workflows**: Browse the `workflows/` directory for automation ideas
-2. **Learn n8n**: Check out the [n8n documentation](https://docs.n8n.io/) and [Academy](https://docs.n8n.io/courses/)
-3. **Join Community**: Visit the [n8n forum](https://community.n8n.io/) and [Discord](https://discord.gg/XPKeKXeB)
-4. **Contribute**: Add your own workflows to the library
-
-## 🔗 OAuth Setup (GitHub, Google, etc.)
-
-### The 408 Error Fix
-
-If you get 408 timeout errors during OAuth:
-
-1. **Update your GitHub OAuth app** with the new tunnel URL:
-   ```bash
-   # Get your current tunnel URL
-   docker compose logs | grep "Tunnel URL"
-   ```
-
-2. **Use the tunnel URL format**:
-   - Homepage URL: `https://your-tunnel-url.hooks.n8n.cloud/`
-   - Authorization callback URL: `https://your-tunnel-url.hooks.n8n.cloud/rest/oauth2-credential/callback`
-
-3. **Access n8n via tunnel URL** (not localhost) when setting up OAuth credentials
-
-### Step-by-Step OAuth Setup:
-
-1. **Get your tunnel URL**: `docker compose logs | grep "Tunnel URL"`
-2. **Create GitHub OAuth App**:
-   - Go to [GitHub Developer Settings](https://github.com/settings/developers)
-   - Click "New OAuth App"
-   - Use your tunnel URL for both Homepage and Callback URLs
-3. **In n8n** (accessed via tunnel URL):
-   - Add GitHub credential
-   - Select "OAuth2" 
-   - Paste Client ID and Secret
-   - The redirect URL will auto-populate correctly
-4. **Test the connection**
-
-### Troubleshooting OAuth:
-- **408 Errors**: Restart n8n to get a fresh tunnel URL
-- **Read-only redirect URL**: Access n8n via tunnel URL, not localhost
-- **GitHub connection fails**: Verify the OAuth app callback URL matches exactly
-
-## 🛡️ Security & Safety Information
-
-### ✅ **What's Safe About This Setup:**
-
-1. **Local Data Only**: All workflows, credentials, and data stay on your Mac
-2. **Encrypted Tunnel**: The n8n tunnel uses HTTPS encryption
-3. **Temporary Tunnel**: Tunnel URLs change when you restart n8n
-4. **Docker Isolation**: n8n runs in an isolated container
-5. **No Production Data**: This is for development/learning only
-
-### ⚠️ **Security Considerations:**
-
-1. **Tunnel URL Access**: 
-   - Anyone with your tunnel URL can access your n8n instance
-   - **Never share the tunnel URL publicly**
-   - Tunnel URLs are temporary and change on restart
-
-2. **OAuth Credentials**:
-   - Store sensitive credentials securely in n8n's credential system
-   - Don't commit OAuth secrets to git repositories
-   - Use minimal permissions when creating OAuth apps
-
-3. **Development vs Production**:
-   - **This setup is for LOCAL DEVELOPMENT ONLY**
-   - Never use tunnel mode for production workloads
-   - For production, use proper domain, SSL, and authentication
-
-### 🔒 **Best Practices:**
-
-1. **Regular Restarts**: Restart n8n periodically to get new tunnel URLs
-2. **Minimal OAuth Permissions**: Only grant necessary GitHub/API permissions
-3. **Credential Management**: Use n8n's built-in credential encryption
-4. **Network Awareness**: Be mindful of what networks you're on when using tunnels
-5. **Backup Regularly**: Use the provided backup scripts
-
-### 🚨 **What to Never Do:**
-
-- ❌ Share tunnel URLs in Slack, email, or documentation
-- ❌ Use this setup for production workflows
-- ❌ Store real production API keys in development
-- ❌ Leave n8n running unattended with tunnel enabled
-- ❌ Use tunnel mode on untrusted networks
-
-### 🛡️ **Additional Security Measures:**
-
-```bash
-# Disable tunnel when not needed (faster, more secure)
-# Edit docker-compose.yml, remove: command: start --tunnel
-docker compose down && docker compose up -d
-
-# Enable encryption key (recommended)
-# Add to docker-compose.yml environment:
-# - N8N_ENCRYPTION_KEY=your-very-long-random-encryption-key-here
-
-# Regular security updates
-docker compose pull && docker compose up -d
-```
+---
 
 ## 🆘 Getting Help
 
-- **Documentation**: https://docs.n8n.io/
+- **Quick Issues**: Check troubleshooting section above
+- **n8n Documentation**: https://docs.n8n.io/
 - **Community Forum**: https://community.n8n.io/
-- **GitHub Issues**: https://github.com/n8n-io/n8n/issues
+- **Workflow Examples**: Browse the `workflows/` folder
 
 ---
 
 **Happy automating! 🎉**
 
-*This setup gives you a full-featured n8n instance for learning and development. Start small, experiment often, and build amazing workflows!*
+*Whether you're automating business processes or developing the next great workflow, this setup gets you running in minutes with enterprise-grade features on your local machine.*

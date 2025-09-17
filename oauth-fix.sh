@@ -38,7 +38,7 @@ echo ""
 # Generate OAuth URLs
 OAUTH_CALLBACK="${TUNNEL_URL}rest/oauth2-credential/callback"
 
-echo "📋 **UPDATE YOUR GITHUB OAUTH APP WITH THESE URLs:**"
+echo "📋 **UPDATE YOUR OAUTH APPS WITH THESE URLs:**"
 echo ""
 echo "Homepage URL:"
 echo "  $TUNNEL_URL"
@@ -47,8 +47,50 @@ echo "Authorization callback URL:"
 echo "  $OAUTH_CALLBACK"
 echo ""
 
+# Save URLs to .env for persistence
+echo "💾 Saving tunnel URL to .env..."
+if [ -f env-helper.sh ]; then
+    source env-helper.sh
+    update_tunnel_url "$TUNNEL_URL"
+else
+    # Fallback method
+    if [ -f .env ]; then
+        awk -v url="$TUNNEL_URL" '
+        /^# Current tunnel URL \(automatically updated by start\.sh\)/ {
+            print $0
+            print "N8N_TUNNEL_URL=" url
+            skip_next = 1
+            next
+        }
+        /^N8N_TUNNEL_URL=/ && !skip_next { next }
+        { skip_next = 0; print }
+        ' .env > .env.tmp && mv .env.tmp .env
+        echo "✅ Tunnel URL saved to environment"
+    fi
+fi
+
+echo ""
 echo "🌐 **ACCESS N8N VIA TUNNEL (not localhost):**"
 echo "  $TUNNEL_URL"
+echo ""
+
+echo "📋 **QUICK SETUP FOR COMMON SERVICES:**"
+echo ""
+echo "🐙 GitHub OAuth App:"
+echo "   1. Go to: https://github.com/settings/developers"
+echo "   2. Click 'New OAuth App'"
+echo "   3. Homepage URL: $TUNNEL_URL"
+echo "   4. Callback URL: $OAUTH_CALLBACK"
+echo ""
+echo "🔐 Google OAuth (Gmail/Drive/Sheets):"
+echo "   1. Go to: https://console.cloud.google.com/apis/credentials"
+echo "   2. Create OAuth 2.0 Client ID"
+echo "   3. Authorized redirect URI: $OAUTH_CALLBACK"
+echo ""
+echo "💬 Slack App:"
+echo "   1. Go to: https://api.slack.com/apps"
+echo "   2. Create New App → OAuth & Permissions"
+echo "   3. Redirect URL: $OAUTH_CALLBACK"
 echo ""
 
 echo "⚠️  **IMPORTANT SECURITY REMINDERS:**"

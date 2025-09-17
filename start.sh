@@ -66,6 +66,51 @@ if docker compose logs | grep -q "Tunnel URL:"; then
     echo "🌍 Tunnel access: $TUNNEL_URL"
     echo ""
     echo "💡 Use tunnel URL for OAuth setup!"
+    
+    # Automatically update .env with tunnel URL
+    if [ -n "$TUNNEL_URL" ]; then
+        echo "🔄 Updating .env with current tunnel URL..."
+        # Use safe environment helper
+        if [ -f env-helper.sh ]; then
+            source env-helper.sh
+            update_tunnel_url "$TUNNEL_URL"
+        else
+            # Fallback method
+            if [ -f .env ]; then
+                # More robust approach - handle the comment line properly
+                awk -v url="$TUNNEL_URL" '
+                /^# Current tunnel URL \(automatically updated by start\.sh\)/ {
+                    print $0
+                    print "N8N_TUNNEL_URL=" url
+                    skip_next = 1
+                    next
+                }
+                /^N8N_TUNNEL_URL=/ && !skip_next { next }
+                { skip_next = 0; print }
+                ' .env > .env.tmp && mv .env.tmp .env
+                echo "✅ Tunnel URL saved to .env file"
+            fi
+        fi
+        
+        # Create webhook URLs file for easy reference
+        echo "📋 Creating webhook reference file..."
+        cat > tunnel-urls.txt << EOF
+# n8n Tunnel URLs - Auto-generated $(date)
+# Use these URLs for external integrations
+
+TUNNEL_URL=$TUNNEL_URL
+WEBHOOK_BASE_URL=${TUNNEL_URL}webhook
+OAUTH_CALLBACK_URL=${TUNNEL_URL}rest/oauth2-credential/callback
+
+# Example webhook URLs:
+# Gmail webhook: ${TUNNEL_URL}webhook/gmail-notifications
+# GitHub webhook: ${TUNNEL_URL}webhook/github-pr-notifications
+# Slack webhook: ${TUNNEL_URL}webhook/slack-events
+
+# Copy these URLs to your external service configurations!
+EOF
+        echo "✅ Webhook URLs saved to tunnel-urls.txt"
+    fi
 else
     echo "🔒 Tunnel not enabled (localhost only)"
 fi
@@ -81,7 +126,9 @@ echo "📋 View logs:        docker compose logs -f"
 echo "🛑 Stop n8n:         docker compose down"
 echo "🔄 Restart:          docker compose restart"
 echo "📦 Update:           docker compose pull && docker compose up -d"
+echo "🔗 Get webhook URLs:  ./webhook-helper.sh"
 echo "🔧 OAuth setup:      ./oauth-fix.sh"
+echo "📡 Monitor tunnel:    ./tunnel-monitor.sh"
 echo "💾 Backup data:      ./backup.sh"
 
 # Check for tunnel URL and OAuth setup

@@ -12,6 +12,11 @@ services:
       - GENERIC_TIMEZONE=${TIMEZONE:-UTC}
       - TZ=${TIMEZONE:-UTC}
       
+      # TUNNEL CONFIGURATION (automatically managed)
+      # ==========================================
+      - N8N_TUNNEL_URL=${N8N_TUNNEL_URL:-}
+      - N8N_WEBHOOK_BASE_PATH=${N8N_WEBHOOK_BASE_PATH:-/webhook}
+      
       # LOCAL DEVELOPMENT OPTIMIZED SETTINGS
       # =================================
       

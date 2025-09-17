@@ -46,9 +46,15 @@ workflows/
 
 ### Required Steps:
 1. **Set up credentials** for each service used in the workflow
-2. **Update webhook URLs** to match your n8n instance
+2. **Get webhook URLs** using `./webhook-helper.sh` (automatic tunnel URL)
 3. **Configure environment variables** if needed
 4. **Test with sample data** before production use
+
+### 🌐 Automatic Tunnel URL Support:
+- All workflows automatically use your current tunnel URL
+- Run `./webhook-helper.sh` to get specific webhook URLs
+- Use tunnel URL (not localhost) for OAuth setup
+- Environment variable `$env.N8N_TUNNEL_URL` available in all workflows
 
 ## 📋 Workflow Naming Convention
 
