@@ -14,8 +14,7 @@ update_env_var() {
         return 1
     fi
     
-    # Create backup
-    cp "$env_file" "${env_file}.backup.$(date +%s)"
+    # Note: Backup creation removed per user request
     
     # Check if the key exists (as a real variable, not in comments)
     if grep -q "^${key}=" "$env_file"; then
@@ -94,22 +93,12 @@ validate_env_file() {
     fi
 }
 
-# Function to restore from backup
+# Function to restore from backup (disabled - backups no longer created)
 restore_env_backup() {
     local env_file="${1:-.env}"
-    local backup_file
-    
-    # Find the most recent backup
-    backup_file=$(ls -t "${env_file}.backup."* 2>/dev/null | head -1)
-    
-    if [ -n "$backup_file" ] && [ -f "$backup_file" ]; then
-        cp "$backup_file" "$env_file"
-        echo "✅ Restored $env_file from $backup_file"
-        return 0
-    else
-        echo "❌ No backup file found for $env_file"
-        return 1
-    fi
+    echo "❌ Backup functionality has been disabled"
+    echo "💡 Use git to track changes to $env_file instead"
+    return 1
 }
 
 # Main function to safely update tunnel URL

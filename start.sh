@@ -58,39 +58,20 @@ TUNNEL_URL=""
 echo ""
 echo "🌐 Access URLs:"
 echo "==============="
-echo "📍 Local access: $LOCALHOST_URL"
 
 # Try to get tunnel URL if enabled
 if docker compose logs | grep -q "Tunnel URL:"; then
     TUNNEL_URL=$(docker compose logs | grep "Tunnel URL:" | tail -1 | sed 's/.*Tunnel URL: //')
-    echo "🌍 Tunnel access: $TUNNEL_URL"
+    echo "🌍 Primary access: $TUNNEL_URL"
+    echo "📍 Local fallback: $LOCALHOST_URL"
     echo ""
-    echo "💡 Use tunnel URL for OAuth setup!"
+    echo "✅ Use tunnel URL for reliable access and OAuth setup!"
     
     # Automatically update .env with tunnel URL
     if [ -n "$TUNNEL_URL" ]; then
-        echo "🔄 Updating .env with current tunnel URL..."
-        # Use safe environment helper
-        if [ -f env-helper.sh ]; then
-            source env-helper.sh
-            update_tunnel_url "$TUNNEL_URL"
-        else
-            # Fallback method
-            if [ -f .env ]; then
-                # More robust approach - handle the comment line properly
-                awk -v url="$TUNNEL_URL" '
-                /^# Current tunnel URL \(automatically updated by start\.sh\)/ {
-                    print $0
-                    print "N8N_TUNNEL_URL=" url
-                    skip_next = 1
-                    next
-                }
-                /^N8N_TUNNEL_URL=/ && !skip_next { next }
-                { skip_next = 0; print }
-                ' .env > .env.tmp && mv .env.tmp .env
-                echo "✅ Tunnel URL saved to .env file"
-            fi
-        fi
+        echo "📋 Saving tunnel URLs for reference..."
+        # Note: Not updating .env with N8N_TUNNEL_URL as it causes tunnel reuse issues
+        # Tunnel URLs are dynamic and should be generated fresh each time
         
         # Create webhook URLs file for easy reference
         echo "📋 Creating webhook reference file..."
@@ -112,7 +93,8 @@ EOF
         echo "✅ Webhook URLs saved to tunnel-urls.txt"
     fi
 else
-    echo "🔒 Tunnel not enabled (localhost only)"
+    echo "📍 Access via: $LOCALHOST_URL"
+    echo "⚠️  Tunnel not available - OAuth integrations won't work"
 fi
 
 echo ""
@@ -125,6 +107,7 @@ echo "=================="
 echo "📋 View logs:        docker compose logs -f"
 echo "🛑 Stop n8n:         docker compose down"
 echo "🔄 Restart:          docker compose restart"
+echo "🔄 Refresh tunnel:   ./tunnel-refresh.sh"
 echo "📦 Update:           docker compose pull && docker compose up -d"
 echo "🔗 Get webhook URLs:  ./webhook-helper.sh"
 echo "🔧 OAuth setup:      ./oauth-fix.sh"
@@ -143,11 +126,16 @@ if [ -n "$TUNNEL_URL" ]; then
 fi
 
 echo ""
-echo "✅ n8n is ready! Open: $LOCALHOST_URL"
+if [ -n "$TUNNEL_URL" ]; then
+    echo "✅ n8n is ready! Open: $TUNNEL_URL"
+else
+    echo "✅ n8n is ready! Open: $LOCALHOST_URL"
+fi
 
 # Optional: Open browser (uncomment if desired)
+# BROWSER_URL="${TUNNEL_URL:-$LOCALHOST_URL}"
 # case "$(uname -s)" in
-#     Darwin*)    open "$LOCALHOST_URL" 2>/dev/null & ;;
-#     Linux*)     xdg-open "$LOCALHOST_URL" 2>/dev/null & ;;
-#     MINGW*)     start "$LOCALHOST_URL" 2>/dev/null & ;;
+#     Darwin*)    open "$BROWSER_URL" 2>/dev/null & ;;
+#     Linux*)     xdg-open "$BROWSER_URL" 2>/dev/null & ;;
+#     MINGW*)     start "$BROWSER_URL" 2>/dev/null & ;;
 # esac

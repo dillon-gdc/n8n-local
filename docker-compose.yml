@@ -12,36 +12,21 @@ services:
       - GENERIC_TIMEZONE=${TIMEZONE:-UTC}
       - TZ=${TIMEZONE:-UTC}
       
-      # TUNNEL CONFIGURATION (automatically managed)
-      # ==========================================
-      - N8N_TUNNEL_URL=${N8N_TUNNEL_URL:-}
-      - N8N_WEBHOOK_BASE_PATH=${N8N_WEBHOOK_BASE_PATH:-/webhook}
-      
-      # LOCAL DEVELOPMENT OPTIMIZED SETTINGS
-      # =================================
-      
-      # Security settings (appropriate for local use)
+      # CORE N8N SETTINGS (matching working Docker command)
+      # ==================================================
       - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
       - N8N_RUNNERS_ENABLED=true
-      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false  # Allow env access for local dev
       
-      # Performance settings for local development
-      - N8N_LOG_LEVEL=info
-      - N8N_DIAGNOSTICS_ENABLED=false
-      - EXECUTIONS_DATA_SAVE_ON_SUCCESS=none
-      - EXECUTIONS_DATA_SAVE_ON_ERROR=all
-      - EXECUTIONS_DATA_MAX_AGE=168  # 7 days (shorter for local dev)
+      # TUNNEL CONFIGURATION (Let n8n generate fresh tunnel URLs)
+      # =======================================================
+      # Note: N8N_TUNNEL_URL removed - forces fresh tunnel generation
       
-      # Workflow management optimized for local use
-      - N8N_WORKFLOW_HISTORY_ENABLED=true
-      - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
-      
-      # Set workflows export path to mounted directory
-      - N8N_USER_FOLDER=/home/node/.n8n
-      - N8N_TEMPLATES_ENABLED=true
+      # MINIMAL SETTINGS FOR TUNNEL COMPATIBILITY
+      # ========================================
+      # Only essential settings to avoid conflicts
       
     volumes:
-      # Persistent data storage
+      # Persistent data storage (matching working Docker command)
       - n8n_data:/home/node/.n8n
       
       # Mount workflows directory as default export destination
@@ -50,26 +35,6 @@ services:
       
       # Mount directory for easy file sharing with workflows
       - ./shared-files:/files
-      
-    # Optional: Add custom networks or dependencies
-    # depends_on:
-    #   - postgres
-    
-    # Health check to ensure n8n is running properly
-    healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:5678/healthz || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    
-    # Resource limits to prevent memory issues (optimized for high-end machines)
-    deploy:
-      resources:
-        limits:
-          memory: 4G
-        reservations:
-          memory: 1G
 
 volumes:
   n8n_data:
