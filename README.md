@@ -45,7 +45,7 @@ Perfect for **business users** who want to automate workflows with Slack, Gmail,
 ./start.sh
 ```
 
-**🎉 That's it!** Open http://localhost:5678 and start automating!
+**🎉 That's it!** n8n will provide a tunnel URL for reliable access and integrations!
 
 ### 📚 Using Workflow Templates
 1. **Browse templates**: Check the `workflows/` folder for automation ideas
@@ -83,11 +83,11 @@ Perfect for **business users** who want to automate workflows with Slack, Gmail,
 <summary><h3>💻 <strong>Developers</strong> - I want to develop with n8n</h3></summary>
 
 ### 🛠️ Development Features
-- **🔄 Auto-tunnel URL management**: Environment variables automatically updated
+- **🔄 Fresh tunnel URLs**: Reliable tunnel generation every restart
 - **🐳 Docker Compose setup**: Easy container management and customization
 - **📦 Volume persistence**: Your data survives container restarts
 - **🔧 Development optimized**: Fast iteration and debugging
-- **📊 Health monitoring**: Built-in tunnel and container monitoring
+- **📊 Health monitoring**: Built-in tunnel monitoring tools
 - **🔗 API-ready**: Full REST API access for automation
 
 ### ⚡ Quick Setup
@@ -103,10 +103,9 @@ n8n-local/
 ├── docker-compose.yml    # Container configuration
 ├── env.example          # Environment template  
 ├── .env                 # Auto-generated config (git-ignored)
-├── start.sh             # Auto-tunnel detection & .env updates
-├── env-helper.sh        # Safe .env modification utilities
-├── webhook-helper.sh    # Interactive webhook URL generator
-├── tunnel-monitor.sh    # Health monitoring & change detection
+├── start.sh             # Auto-tunnel detection & startup
+├── tunnel-refresh.sh    # Tunnel refresh utility
+├── webhook-helper.sh    # Webhook URL generator
 ├── workflows/           # Template library & export destination
 ├── shared-files/        # Mount point for workflow file access
 └── backups/            # Automated backup storage
@@ -116,29 +115,27 @@ n8n-local/
 
 #### Environment Management
 ```bash
-# Auto-tunnel detection & environment update
+# Start with fresh tunnel
 ./start.sh
 
-# Monitor tunnel changes
-./tunnel-monitor.sh --monitor
+# Refresh tunnel if needed
+./tunnel-refresh.sh
 
-# Safe environment variable updates
-./env-helper.sh "https://new-tunnel-url.com/"
-
-# Validate environment file
-source env-helper.sh && validate_env_file
+# Get current tunnel status
+./webhook-helper.sh
 ```
 
 #### Webhook Development
 ```bash
-# Interactive webhook URL generator
+# Get webhook URLs
 ./webhook-helper.sh
 
-# Get tunnel URL programmatically
-source .env && echo $N8N_TUNNEL_URL
+# Get tunnel URL from file
+grep "TUNNEL_URL=" tunnel-urls.txt | cut -d'=' -f2
 
 # Test webhook connectivity
-curl -X POST "${N8N_TUNNEL_URL}webhook/test" -d '{"test":true}'
+TUNNEL_URL=$(grep "TUNNEL_URL=" tunnel-urls.txt | cut -d'=' -f2)
+curl -X POST "${TUNNEL_URL}webhook/test" -d '{"test":true}'
 ```
 
 #### Container Management
@@ -156,28 +153,30 @@ docker compose pull && docker compose up -d
 docker compose down -v
 ```
 
-### 🌐 Environment Variables
+### 🌐 Tunnel URLs
 
-Your tunnel URL is automatically managed:
+Tunnel URLs are saved to `tunnel-urls.txt`:
 ```bash
-# Available in workflows
-$env.N8N_TUNNEL_URL
+# Get current tunnel URL
+grep "TUNNEL_URL=" tunnel-urls.txt | cut -d'=' -f2
 
-# Available in shell
-source .env
-echo $N8N_TUNNEL_URL
+# Available in n8n workflows (via tunnel detection)
+# Use webhook-helper.sh to get current URLs
 ```
 
 ### 🔌 API Access
 ```bash
+# Get tunnel URL first
+TUNNEL_URL=$(grep "TUNNEL_URL=" tunnel-urls.txt | cut -d'=' -f2)
+
 # Health check
-curl ${N8N_TUNNEL_URL}healthz
+curl ${TUNNEL_URL}healthz
 
 # REST API
-curl ${N8N_TUNNEL_URL}rest/workflows
+curl ${TUNNEL_URL}rest/workflows
 
 # Webhook endpoints
-curl ${N8N_TUNNEL_URL}webhook/your-endpoint
+curl ${TUNNEL_URL}webhook/your-endpoint
 ```
 
 ### 📦 Custom Configuration
@@ -200,11 +199,11 @@ Mount your certificates in `docker-compose.yml` and update environment variables
 # Container logs
 docker compose logs -f
 
-# Tunnel health check
-./tunnel-monitor.sh
+# Tunnel status
+./webhook-helper.sh
 
-# Environment validation  
-source env-helper.sh && validate_env_file
+# Refresh tunnel if broken
+./tunnel-refresh.sh
 
 # Backup before testing
 ./backup.sh
@@ -227,7 +226,7 @@ source env-helper.sh && validate_env_file
 | **Start n8n** | `./start.sh` | Auto-setup, tunnel detection, env updates |
 | **Get webhook URLs** | `./webhook-helper.sh` | Interactive URL generator |
 | **OAuth setup** | `./oauth-fix.sh` | Step-by-step external service setup |
-| **Monitor health** | `./tunnel-monitor.sh` | Check tunnel status and changes |
+| **Refresh tunnel** | `./tunnel-refresh.sh` | Get fresh tunnel URL if broken |
 | **Stop n8n** | `./stop.sh` | Graceful shutdown |
 | **Backup data** | `./backup.sh` | Create timestamped backup |
 | **View logs** | `docker compose logs -f` | Real-time container logs |
@@ -284,19 +283,19 @@ ports: ["5679:5678"]
 
 **❌ Tunnel not working**
 ```bash
-# Restart to get fresh tunnel
-./stop.sh && ./start.sh
+# Get fresh tunnel
+./tunnel-refresh.sh
 
 # Check tunnel status
-./tunnel-monitor.sh
-
-# Get current URLs
 ./webhook-helper.sh
+
+# Alternative: restart completely
+./stop.sh && ./start.sh
 ```
 
 **❌ OAuth 408 errors**
 - Use tunnel URL (not localhost) for OAuth setup
-- Restart n8n to get fresh tunnel URL
+- Get fresh tunnel: `./tunnel-refresh.sh`
 - Run `./oauth-fix.sh` for detailed guidance
 
 ---
@@ -324,9 +323,9 @@ n8n-local/
 ├── 🚀 start.sh              # Start n8n with auto-tunnel detection
 ├── 🛑 stop.sh               # Stop n8n gracefully
 ├── ⚙️  setup.sh              # Initial setup and configuration
-├── 🔗 webhook-helper.sh     # Interactive webhook URL generator
-├── 📡 tunnel-monitor.sh     # Health monitoring and change detection
-├── 🔧 oauth-fix.sh          # OAuth troubleshooting and setup
+├── 🔗 webhook-helper.sh     # Webhook URL generator
+├── 🔄 tunnel-refresh.sh     # Refresh tunnel URLs
+├── 🔧 oauth-fix.sh          # OAuth setup helper
 ├── 💾 backup.sh             # Create timestamped backups
 ├── 📋 restore.sh            # Restore from backups
 ├── 🐳 docker-compose.yml    # Container configuration
@@ -383,29 +382,29 @@ If you've tried setting up n8n locally before, you've probably hit these frustra
 
 This repository eliminates every single pain point above:
 
-**✅ **Reliable OAuth & Integrations**
-- **Automatic tunnel management**: Fresh, working tunnel URLs every time
-- **Persistent URL tracking**: Environment automatically updated with current URLs
+**✅ Reliable OAuth & Integrations**
+- **Fresh tunnel generation**: New, working tunnel URLs every restart
+- **No stale URL issues**: Prevents tunnel reuse problems that cause 404/408 errors
 - **Integration testing**: Built-in tools to verify webhook and OAuth connectivity
 - **Real-world tested**: Works with Gmail, Slack, GitHub, Discord, and 400+ services
 
-**✅ **Zero-Configuration Setup**
+**✅ Zero-Configuration Setup**
 - **One-command installation**: `./setup.sh && ./start.sh` - that's it
 - **Cross-platform**: Works identically on Mac, Windows, and Linux
 - **Intelligent defaults**: Optimal settings for local development out of the box
 - **Environment auto-detection**: Timezone, resources, and configuration handled automatically
 
-**✅ **Integration-First Design**
-- **Persistent webhook URLs**: Generated and tracked automatically
-- **Interactive helpers**: Step-by-step OAuth setup with exact URLs to use
-- **Health monitoring**: Detects when tunnels change and updates everything
+**✅ Integration-First Design**
+- **Dynamic webhook URLs**: Generated fresh and saved to tunnel-urls.txt
+- **Simple helpers**: Easy OAuth setup with exact URLs to use
+- **Tunnel refresh**: One-command tunnel refresh when needed
 - **Template library**: Ready-to-import workflows with real integration examples
 
-**✅ **Professional Development Workflow**
+**✅ Professional Development Workflow**
 - **Docker Compose optimization**: Minimal, reliable configuration that just works
 - **Automated backup system**: Your work is never lost
-- **Environment management**: Safe, atomic updates to configuration
-- **Monitoring and debugging**: Built-in tools to diagnose and fix issues
+- **Streamlined scripts**: Clean, focused tools without bloat
+- **Debugging tools**: Built-in utilities to diagnose and fix tunnel issues
 
 ### Why This Matters
 
